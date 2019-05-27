@@ -3,6 +3,7 @@ use strict;
 use threads;
 use Thread::Queue;
 use File::Basename;
+use FindBin;
 
 # customized parameters
 my $seq_path = ""; #specify the sequence file
@@ -16,7 +17,8 @@ my $verbose = 0; #0, remove the .finder folder after finished; 1, retain the fol
 my $threads = 4; #specify thread number to run ltr_finder
 
 # dependencies
-my $script_path = dirname(__FILE__);
+#my $script_path = dirname(__FILE__);
+my $script_path = $FindBin::Bin;
 my $cut = "$script_path/bin/cut.pl"; #the program to cut sequence
 my $ltr_finder = "$script_path/bin/LTR_FINDER.x86_64-1.0.7/ltr_finder"; #the path to ltr_finder
 
@@ -40,9 +42,9 @@ Options:	-seq	[file]	Specify the sequence file.
 		-harvest_out	Output LTRharvest format if specified. Default: output LTR_FINDER table format.
 		-next		Only summarize the results for previous jobs without rerunning LTR_FINDER (for -v).
 		-verbose|-v	Retain LTR_FINDER outputs for each sequence piece.
-		-cut	[file]	The path to the program cut.pl to split the sequence.
-		-finder	[file]	The path to the program LTR_FINDER.
+		-finder	[file]	The path to the program LTR_FINDER (default v1.0.7, included in this package).
 		-threads|-t	[int]	Indicate how many CPU/threads you want to run LTR_FINDER.
+		-help|-h	Display this help information.
 \n";
 
 
@@ -54,17 +56,18 @@ foreach (@ARGV){
 	$try1 = $ARGV[$i+1] if /^-try1$/i;
 	$harvest_format = 1 if /^-harvest_out$/i;
 	$next = 1 if /^-next$/i;
-	$verbose = 1 if /^-verbose|-v$/i;
+	$verbose = 1 if /^-verbose$|^-v$/i;
 	$cut = $ARGV[$i+1] if /^-cut$/i;
 	$ltr_finder = $ARGV[$i+1] if /^-finder$/i;
-	$threads = $ARGV[$i+1] if /^-threads|-t$/i;
+	$threads = $ARGV[$i+1] if /^-threads$|^-t$/i;
+	die $usage if /^-help$|^-h$/i;
 	$i++;
 	}
 
 # make a softlink to the genome file
 die $usage unless -s $seq_path;
 my $seq_file = basename($seq_path);
-`ln -s $seq_path $seq_file` unless $seq_path eq $seq_file;
+`ln -s $seq_path $seq_file` unless -s $seq_file;
 
 open SEQ, "<$seq_file" or die $usage;
 my %seq; #a hash to store seq name and length info

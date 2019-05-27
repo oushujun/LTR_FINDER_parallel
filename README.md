@@ -21,9 +21,9 @@ Update: 05/25/2019
 		-harvest_out    Output LTRharvest format if specified. Default: output LTR_FINDER table format.
 		-next           Only summarize the results for previous jobs without rerunning LTR_FINDER (for -v).
 		-verbose|-v     Retain LTR_FINDER outputs for each sequence piece.
-		-cut    [file]  The path to the program cut.pl to split the sequence.
-		-finder [file]  The path to the program LTR_FINDER.
+		-finder [file]  The path to the program LTR_FINDER (default v1.0.7, included in this package).
 		-threads|-t     [int]   Indicate how many CPU/threads you want to run LTR_FINDER.
+		-help|-h        Display this help information.
 
 
 ### Parameter setting for LTR_FINDER
