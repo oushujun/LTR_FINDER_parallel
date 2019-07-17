@@ -1,6 +1,7 @@
 ## ~ ~ ~ Run LTR_FINDER in parallel ~ ~ ~
 This is a Perl wrapper for [LTR_FINEDR](https://github.com/xzhub/LTR_Finder). All rights reserved to the original author. It's free for non-commercial use. For commercial use, a software agreement is required for LTR_FINDER.
 
+
 ### Installation: No need. Just download and run.
 Date: 09/19/2018
 
@@ -24,6 +25,7 @@ Update: 05/25/2019
 		-threads|-t     [int]   Indicate how many CPU/threads you want to run LTR_FINDER.
 		-help|-h        Display this help information.
 
+
 ### Parameter setting for LTR_FINDER
 Currently there is no parameter settings for LTR_FINDER in this parallel version. I have chose the "best" parameters for you:
 
@@ -32,6 +34,7 @@ Currently there is no parameter settings for LTR_FINDER in this parallel version
 Please refer to [LTR_FINEDR](https://github.com/xzhub/LTR_Finder) for details of these parameters.
 
 If you want to use other parameters in LTR_FINDER_parallel, please edit the file `LTR_FINDER_parallel` line 9 to change the preset parameters.
+
 
 ### Performance benchmark
 Genome | Arabidopsis | Rice | Maize | Wheat
@@ -49,15 +52,17 @@ Number of LTR candidates (36 CPUs)	| 226	| 2,834	| 59,658	| 237,352
 
  *Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
 
+
 ### FAQ and best practices
 1. How to generate output files for `LTR_retriever`?
-A: You can use the `-harvest_out` parameter to generate `LTRharvest`-format output, then feed to `LTR_retriever` using `-inharvest`. If you have more than one `LTRharvest` output, simply `cat` them together.
+	A: You can use the `-harvest_out` parameter to generate `LTRharvest`-format output, then feed to `LTR_retriever` using `-inharvest`. If you have more than one `LTRharvest` output, simply `cat` them together.
 
 2. How to prepare the genome file?
-A: It's highly recommended to use short and simple sequence names. For example, use letters, numbers, and _ to generate unique names shorter than 15 bits. This will make your downstream analyses much more easier. If you have delicate sequence names and encounter errors, you may want to simplify them and try again.
+	A: It's highly recommended to use short and simple sequence names. For example, use letters, numbers, and _ to generate unique names shorter than 15 bits. This will make your downstream analyses much more easier. If you have delicate sequence names and encounter errors, you may want to simplify them and try again.
 
 3. Do I really need to modify the `-size`, `-time`, and `-try1` parameters?
-A: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
+	A: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
+
 
 ### Issues
 Currently I am using a non-overlapping way to cut the original sequence. Some LTR elements could be broken due to this. So far the side-effect is minimal (< 1% loss) comparing to the performance boost (up to 8,500X faster). I don't have a plan to update it to a sliding window scheme. Welcome to improve it and request for merge.
