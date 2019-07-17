@@ -42,14 +42,24 @@ Original memory (1 CPU*)	| 0.37 Gbyte	| 0.55 Gbyte	| 5.00 Gbyte	| 11.88 Gbyte
 Parallel memory (36 CPUs*)	| 0.10 Gbyte	| 0.12 Gbyte	| 0.82 Gbyte	| 17.67 Gbyte
 Original time (1 CPU)	| 0.58 h	| 2.1 h	| 448.5 h	| 10169.3 h
 Parallel time (36 CPUs)	| 6.4 min	| 2.6 min	| 10.3 min	| 71.8 min
-Speed up	| 5.4 x	| 9,532 x	| 2,614 x	| 8,496 x
+Speed up	| 5.4 x	| 48.5 x	| 2,613 x	| 8,498 x
 Number of LTR candidates (1 CPU)	| 226	| 2,851	| 60,165	| 231,043
 Number of LTR candidates (36 CPUs)	| 226	| 2,834	| 59,658	| 237,352
 % difference of candidate #	| 0.00%	| 0.60%	| 0.84%	| -2.73%
 
  *Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
 
+### FAQ and best practices
+1. How to generate output files for `LTR_retriever`?
+A: You can use the `-harvest_out` parameter to generate `LTRharvest`-format output, then feed to `LTR_retriever` using `-inharvest`. If you have more than one `LTRharvest` output, simply `cat` them together.
+
+2. How to prepare the genome file?
+A: It's highly recommended to use short and simple sequence names. For example, use letters, numbers, and _ to generate unique names shorter than 15 bits. This will make your downstream analyses much more easier. If you have delicate sequence names and encounter errors, you may want to simplify them and try again.
+
+3. Do I really need to modify the `-size`, `-time`, and `-try1` parameters?
+A: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
+
 ### Issues
-Currently I am using a non-overlapping way to cut the original sequence. Some LTR elements could be broken due to this. So far the side-effect is minimal (< 1% loss) comparing to the performance boost (up to 9,500X faster). I don't have a plan to update it to a sliding window scheme. Welcome to improve it and request for merge.
+Currently I am using a non-overlapping way to cut the original sequence. Some LTR elements could be broken due to this. So far the side-effect is minimal (< 1% loss) comparing to the performance boost (up to 8,500X faster). I don't have a plan to update it to a sliding window scheme. Welcome to improve it and request for merge.
 
 For any other issues please open a thread and I will be happy to help.
