@@ -54,13 +54,13 @@ Number of LTR candidates (36 CPUs)	| 226	| 2,834	| 59,658	| 237,352
 
 
 ### FAQ and best practices
-Q1. How to generate output files for `LTR_retriever`?
+Q1. How to generate output files for `LTR_retriever`?  
 A1: You can use the `-harvest_out` parameter to generate `LTRharvest`-format output, then feed to `LTR_retriever` using `-inharvest`. If you have more than one `LTRharvest` output, simply `cat` them together.
 
-Q2. How to prepare the genome file?
+Q2. How to prepare the genome file?  
 A2: It's highly recommended to use short and simple sequence names. For example, use letters, numbers, and _ to generate unique names shorter than 15 bits. This will make your downstream analyses much more easier. If you have delicate sequence names and encounter errors, you may want to simplify them and try again.
 
-Q3. Do I really need to modify the `-size`, `-time`, and `-try1` parameters?
+Q3. Do I really need to modify the `-size`, `-time`, and `-try1` parameters?  
 A3: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
 
 
