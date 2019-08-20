@@ -1,5 +1,5 @@
 ## ~ ~ ~ Run LTR_FINDER in parallel ~ ~ ~
-This is a Perl wrapper for [LTR_FINEDR](https://github.com/xzhub/LTR_Finder). All rights reserved to the original author. It's free for non-commercial use. For commercial use, a software agreement is required for LTR_FINDER.
+This is a Perl wrapper for [LTR_FINEDR](https://github.com/xzhub/LTR_Finder). All rights reserved to the original author. It's free for non-commercial use. For commercial use, a software agreement is required for LTR_FINDER. LTR_FINDER_parallel is released under open source license CC BY 4.0.
 
 
 ### Installation: No need. Just download and run.
@@ -51,6 +51,11 @@ Number of LTR candidates (36 CPUs)	| 226	| 2,834	| 59,658	| 237,352
 % difference of candidate #	| 0.00%	| 0.60%	| 0.84%	| -2.73%
 
  *Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
+
+
+### Citation
+If you find LTR_FINDER_parallel helpful, please cite this manuscript:
+Ou S, Jiang N. LTR_FINDER_parallel: parallelization of LTR_FINDER enabling rapid identification of long terminal repeat retrotransposons [Internet]. bioRxiv. 2019. p. 722736. Available from: https://www.biorxiv.org/content/10.1101/722736v1
 
 
 ### FAQs and best practices
