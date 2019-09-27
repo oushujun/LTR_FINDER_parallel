@@ -5,7 +5,7 @@ This is a Perl wrapper for [LTR_FINEDR](https://github.com/xzhub/LTR_Finder). Al
 ### Installation: No need. Just download and run.
 Date: 09/19/2018
 
-Update: 05/25/2019
+Update: 09/27/2019
 
 	Usage: perl LTR_FINDER_parallel -seq [file] -size [int] -threads [int]  
 	Options:
@@ -24,6 +24,14 @@ Update: 05/25/2019
 		-finder [file]  The path to the program LTR_FINDER (default v1.0.7, included in this package).
 		-threads|-t     [int]   Indicate how many CPU/threads you want to run LTR_FINDER.
 		-help|-h        Display this help information.
+
+
+### Input
+Genome file in multi-FASTA format.
+
+
+### Output
+GFF3, LTRharvest (STDOUT) or LTR_FINDER (-w 2) formats of predicted LTR candidates.
 
 
 ### Parameter setting for LTR_FINDER
@@ -59,7 +67,7 @@ Ou S, Jiang N. LTR_FINDER_parallel: parallelization of LTR_FINDER enabling rapid
 
 
 ### FAQs and best practices
-1. How to generate output files for `LTR_retriever`?  
+1. How to generate output files for [LTR_retriever](https://github.com/oushujun/LTR_retriever)?  
 A: You can use the `-harvest_out` parameter to generate `LTRharvest`-format output, then feed to `LTR_retriever` using `-inharvest`. If you have more than one `LTRharvest` output, simply `cat` them together.
 
 2. How to prepare the genome file?  
