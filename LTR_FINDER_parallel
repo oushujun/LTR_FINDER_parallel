@@ -7,7 +7,7 @@ use File::Basename;
 use FindBin;
 use Pod::Usage;
 
-my $version = "v1.1";
+my $version = "v1.2";
 # customized parameters
 my $seq_path = ""; #specify the sequence file
 my $finder_para = "-w 2 -C -D 15000 -d 1000 -L 7000 -l 100 -p 20 -M 0.85"; #specify ltr_finder parameters. The "-w 2" parameter is required.
