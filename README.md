@@ -76,7 +76,8 @@ A: It's highly recommended to use short and simple sequence names. For example, 
 A: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
 
 
-### Issues
-Currently I am using a non-overlapping way to cut the original sequence. Some LTR elements could be broken due to this. So far the side-effect is minimal (< 1% loss) comparing to the performance boost (up to 8,500X faster). I don't have a plan to update it to a sliding window scheme. Welcome to improve it and request for merge.
+### Known issues
+1. Currently I am using a non-overlapping way to cut the original sequence. Some LTR elements could be broken due to this. So far the side-effect is minimal (< 1% loss) comparing to the performance boost (up to 8,500X faster). I don't have a plan to update it to a sliding window scheme. Welcome to improve it and request for merge.  
+1. When a single input sequence is longer than 1 Gbp (observed in Gymnosperm genomes), the parallel script may quit with the "Out of Memory!" error. I have not found the cause of this error yet, but the memory footprint seems not large. The `cut.pl` script should be fine and you will see the `*.finder` folder with split sequences in it. A workaround is to run `LTR_FINDER` with each split sequence and output to `$seq.finder.scn`, then run `LTR_FINDER_parallel` with an additional parameter `-next` to consolidate these results. Another workaround is to split the sequence to less than 1 Gbp (eg., 900 Mbp) using the `cut.pl` script, then run `LTR_FINDER_parallel` on the split sequences. The same error is observed in [LTR_HARVEST_parallel](https://github.com/oushujun/LTR_HARVEST_parallel), thus you may use the same workaround.
 
 For any other issues please open a thread and I will be happy to help.
