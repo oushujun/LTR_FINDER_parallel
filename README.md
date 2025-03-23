@@ -4,14 +4,15 @@ This is a Perl wrapper for [LTR_FINEDR](https://github.com/xzhub/LTR_Finder). Al
 
 ### Installation: No need. Just download and run.
 
-	Usage: perl LTR_FINDER_parallel -seq [file] -size [int] -threads [int]  
+	Usage: perl LTR_FINDER_parallel -seq [file] -size [int] -overlap [int] -threads [int]  
 	Options:
 		-seq    [file]  Specify the sequence file.
 		-size   [int]   Specify the size you want to split the genome sequence.
 				Please make it large enough to avoid spliting too many LTR elements. Default 5000000 (bp).  			 
+		-overlap        [int]   Specify the overlapping size for each split piece. Default 100000 (bp)
 		-time   [int]   Specify the maximum time to run a subregion (a thread).
-				This helps to skip simple repeat regions that take a substantial of time to run. Default: 1500 (seconds).
-				Suggestion: 300 for -size 1000000. Increase -time when -size increased.  
+				This helps to skip simple repeat regions that take a substantial of time to run. Default: 120 (seconds).
+				Increase -time when -size increased.  
 		-try1   [0|1]   If a region requires more time than the specified -time (timeout), decide:  
 					0, discard the entire region.
 					1, further split to 50 Kb regions to salvage LTR candidates (default);
@@ -52,11 +53,12 @@ Parallel memory (36 CPUs*)	| 0.10 Gbyte	| 0.12 Gbyte	| 0.82 Gbyte	| 17.67 Gbyte
 Original time (1 CPU)	| 0.58 h	| 2.1 h	| 448.5 h	| 10169.3 h
 Parallel time (36 CPUs)	| 6.4 min	| 2.6 min	| 10.3 min	| 71.8 min
 Speed up	| 5.4 x	| 48.5 x	| 2,613 x	| 8,498 x
-Number of LTR candidates (1 CPU)	| 226	| 2,851	| 60,165	| 231,043
-Number of LTR candidates (36 CPUs)	| 226	| 2,834	| 59,658	| 237,352
-% difference of candidate #	| 0.00%	| 0.60%	| 0.84%	| -2.73%
+Number of LTR candidates (original)	| 226	| 2,851	| 60,165	| 231,043
+Number of LTR candidates (parallel)	| 229	| 2,870	| 60,597	| 242,421
+Extra candidates by parallel**	| 0.01%	| 0.67%	| 0.72%	| 4.93%
 
  \*Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
+ \*\*Likely due to local search optimization in the small chunk of sequences
 
 
 ### Citation
@@ -76,8 +78,5 @@ A: It's highly recommended to use short and simple sequence names. For example, 
 A: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
 
 
-### Known issues
-1. Currently I am using a non-overlapping way to cut the original sequence. Some LTR elements could be broken due to this. So far the side-effect is minimal (< 1% loss) comparing to the performance boost (up to 8,500X faster). I don't have a plan to update it to a sliding window scheme. Welcome to improve it and request for merge.  
-1. When a single input sequence is longer than 1 Gbp (observed in Gymnosperm genomes), the parallel script may quit with the "Out of Memory!" error. I have not found the cause of this error yet, but the memory footprint seems not large. The `cut.pl` script should be fine and you will see the `*.finder` folder with split sequences in it. A workaround is to run `LTR_FINDER` with each split sequence and output to `$seq.finder.scn`, then run `LTR_FINDER_parallel` with an additional parameter `-next` to consolidate these results. Another workaround is to split the sequence to less than 1 Gbp (eg., 900 Mbp) using the `cut.pl` script, then run `LTR_FINDER_parallel` on the split sequences. The same error is observed in [LTR_HARVEST_parallel](https://github.com/oushujun/LTR_HARVEST_parallel), thus you may use the same workaround.
-
+### Issues
 For any other issues please open a thread and I will be happy to help.

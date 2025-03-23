@@ -7,13 +7,17 @@ use File::Basename;
 use FindBin;
 use Pod::Usage;
 
-my $version = "v1.2";
+# updates
+# add the -o parameter. Facilitated by DeepSeek R1. 03/23/2025
+
+my $version = "v1.3";
 # customized parameters
 my $seq_path = ""; #specify the sequence file
 my $finder_para = "-w 2 -C -D 15000 -d 1000 -L 7000 -l 100 -p 20 -M 0.85"; #specify ltr_finder parameters. The "-w 2" parameter is required.
 my $harvest_format = 0; #0, print out format is in LTR_finder table output format (default); 1, LTRharvest screen output format
 my $size_of_each_piece = 5000000; #5 Mb per piece
-my $timeout = 1500; #set maximum time for a thread to run. After $timeout seconds, the child thread is killed.
+my $overlap = 100000;  # 100kb overlap each piece
+my $timeout = 120; #set maximum time for a thread to run. After $timeout seconds, the child thread will be killed.
 my $try1 = 1; #1, further split to 50 Kb regions if thread killed by timeout. 0, no further split.
 my $next = 0; #0, run LTR_FINDER. 1, only summarize results if the .finder folder is retained.
 my $verbose = 0; #0, remove the .finder folder after finished; 1, retain the folder for later use.
@@ -41,9 +45,10 @@ Usage: perl LTR_FINDER_parallel -seq [file] -size [int] -threads [int]
 Options:	-seq	[file]	Specify the sequence file.
 		-size	[int]	Specify the size you want to split the genome sequence.
 				Please make it large enough to avoid spliting too many LTR elements. Default 5000000 (bp)
+		-overlap|-o	[int]	Specify the overlapping size for each split piece. Default 100000 (bp)
 		-time	[int]	Specify the maximum time to run a subregion (a thread).
-				This helps to skip simple repeat regions that take a substantial of time to run. Default: 1500 (seconds).
-				Suggestion: 300 for -size 1000000. Increase -time when -size increased.
+				This helps to skip simple repeat regions that take a substantial of time to run. Default: 120 (seconds).
+				Increase -time when -size increased.
 		-try1	[0|1]	If a region requires more time than the specified -time (timeout), decide:
 					0, discard the entire region.
 					1, further split to 50 Kb regions to salvage LTR candidates (default);
@@ -62,6 +67,7 @@ my $i=0;
 foreach (@ARGV){
 	$seq_path = $ARGV[$i+1] if /^-seq$/i;
 	$size_of_each_piece = $ARGV[$i+1] if /^-size$/i;
+	$overlap = $ARGV[$i+1] if /^-overlap$|^-o$/i;
 	$timeout = $ARGV[$i+1] if /^-time$/i;
 	$try1 = $ARGV[$i+1] if /^-try1$/i;
 	$harvest_format = 1 if /^-harvest_out$/i;
@@ -98,6 +104,19 @@ if ( ! $seq_path and (! $check_dependencies) ){
 }
 print "Pass!\n";
 exit if $check_dependencies;
+
+# Memory-efficient sequence length calculation
+sub calculate_length {
+    my $seq_part = shift;
+    return 0 unless defined $seq_part;
+    my @lines = split(/\n/, $seq_part);
+    my $len = 0;
+    for my $line (@lines) {
+        $line =~ s/\s+//g;
+        $len += length $line;
+    }
+    return $len;
+}
 
 # make a softlink to the genome file
 my $seq_file = basename($seq_path);
@@ -144,7 +163,7 @@ goto Next if $next == 1; #run the next step if all LTR_finder processes are done
 # prepre files
 `mkdir $seq_file.finder` unless -d "$seq_file.finder";
 chdir "$seq_file.finder";
-`perl $cut ../$seq_file -s -l $size_of_each_piece`;
+`perl $cut ../$seq_file -s -l $size_of_each_piece -o $overlap`;
 
 ##multi-threading using queue, create a worker module for parallel computation
 my $process_q=Thread::Queue->new();
@@ -153,10 +172,10 @@ sub worker {
 		chomp $seq;
 		$seq =~ s/\s+//;
 		print localtime() ." CPU".threads -> self() -> tid().": running on $seq\n";
-		`timeout $timeout ${ltr_finder}ltr_finder $finder_para $seq > $seq.finder.scn`; #set the max running time for a thread as $timeout seconds
+		`timeout -s KILL $timeout ${ltr_finder}ltr_finder $finder_para $seq > $seq.finder.scn`; #set the max running time for a thread as $timeout seconds
 		if ($? ne 0 and $try1 ne 0){
 			print localtime() ." CPU".threads -> self() -> tid().": $seq timeout, process it with the salvage mode\n";
-			my $in=`perl $script_path/LTR_FINDER_parallel -seq $seq -size 50000 -time 10 -try1 0 -threads 1 -cut $cut -finder $ltr_finder`;
+			my $in=`perl $script_path/LTR_FINDER_parallel -seq $seq -size 50000 -overlap 5000 -time 10 -try1 0 -threads 1 -cut $cut -finder $ltr_finder`;
 			`mv $seq.finder.combine.scn $seq.finder.scn`;
 			`rm -rf ${seq}.finder`; #remove?
 			}
@@ -206,11 +225,12 @@ if ($harvest_format == 0){
 # process each candidates
 open List, "<$seq_file.list" or die $!;
 my $count = 1; #count repeats in gff
+my %seen;  # Hash to track duplicate entries
 foreach my $seq (<List>){
 	$seq =~ s/\s+//;
 	my ($base, $order) = ($seq, 1);
 	($base, $order) = ($1, $2) if $seq =~ /(.*)_sub([0-9]+)$/;
-	my $coord_adj = ($order - 1) * $size_of_each_piece;
+	my $coord_adj = ($order - 1) * ($size_of_each_piece - $overlap); # Adjusted for overlap
 	next unless -e "$seq_file.finder/$seq.finder.scn";
 	open Scn, "<$seq_file.finder/$seq.finder.scn" or die $!;
 	while (<Scn>){
@@ -230,6 +250,11 @@ foreach my $seq (<List>){
 		my ($start, $end) = ($1, $2) if $coord[0] =~ /([0-9]+)\-([0-9]+)/;
 		my ($lltr, $rltr) = ($1, $2) if $ltr_len=~/([0-9]+),([0-9]+)/; 
 		my ($lltr_e, $rltr_s) = ($start+$lltr-1, $end-$rltr+1);
+
+		# Create unique key using critical features and Skip duplicate entries
+		my $key = join(":", $base, $start, $end, $lltr_e, $rltr_s);
+		next if exists $seen{$key};
+		$seen{$key} = 1;
 
 		#output LTRharvest or LTR_FINDER (-w 2) format
 		if ($harvest_format == 0){
