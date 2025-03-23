@@ -55,9 +55,9 @@ Parallel time (36 CPUs)	| 6.4 min	| 2.6 min	| 10.3 min	| 71.8 min
 Speed up	| 5.4 x	| 48.5 x	| 2,613 x	| 8,498 x
 Number of LTR candidates (original)	| 226	| 2,851	| 60,165	| 231,043
 Number of LTR candidates (parallel)	| 229	| 2,870	| 60,597	| 242,421
-Extra candidates by parallel**	| 0.01%	| 0.67%	| 0.72%	| 4.93%
+Extra candidates by parallel**	| 1.33%	| 0.67%	| 0.72%	| 4.93%
 
- \*Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
+ \*Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz   
  \*\*Likely due to local search optimization in the small chunk of sequences
 
 
