@@ -118,14 +118,15 @@ sub calculate_length {
     return $len;
 }
 
-# make a softlink to the genome file
+# strip annotations from seq IDs (keep only first word after >) and use as working copy
 my $seq_file = basename($seq_path);
-`ln -s $seq_path $seq_file` unless -s $seq_file;
+my $seq_clean = "$seq_file.shortID";
+`perl -pe 's/^>(\\S+).*/>\$1/' $seq_path > $seq_clean` unless -s $seq_clean;
 
 
 if ($threads == 1){
 # run the original single threaded code
-`${ltr_finder}ltr_finder $finder_para $seq_file > $seq_file.finder.scn`;
+`${ltr_finder}ltr_finder $finder_para $seq_clean > $seq_file.finder.scn`;
 if ($harvest_format == 0){
 	`mv $seq_file.finder.scn $seq_file.finder.combine.scn`;
 	} else {
@@ -135,7 +136,7 @@ if ($harvest_format == 0){
 } else {
 ## run the paralleled code
 # read genome in memory
-open SEQ, "<$seq_file" or die $usage;
+open SEQ, "<$seq_clean" or die $usage;
 open GFF, ">$seq_file.finder.combine.gff3" or die $!;
 print GFF "##gff-version   3\n";
 my %seq; #a hash to store seq name and length info
@@ -163,7 +164,7 @@ goto Next if $next == 1; #run the next step if all LTR_finder processes are done
 # prepre files
 `mkdir $seq_file.finder` unless -d "$seq_file.finder";
 chdir "$seq_file.finder";
-`perl $cut ../$seq_file -s -l $size_of_each_piece -o $overlap`;
+`perl $cut ../$seq_clean -s -l $size_of_each_piece -o $overlap`;
 
 ##multi-threading using queue, create a worker module for parallel computation
 my $process_q=Thread::Queue->new();
@@ -183,7 +184,7 @@ sub worker {
 	}
 
 #insert seq names into the worker queue
-open List, "<../$seq_file.list" or die $!;
+open List, "<../$seq_clean.list" or die $!;
 $process_q -> enqueue (<List>);
 $process_q -> end(); #stop adding items to the queue
 close List;
@@ -223,7 +224,7 @@ if ($harvest_format == 0){
 	}
 
 # process each candidates
-open List, "<$seq_file.list" or die $!;
+open List, "<$seq_clean.list" or die $!;
 my $count = 1; #count repeats in gff
 my %seen;  # Hash to track duplicate entries
 foreach my $seq (<List>){
