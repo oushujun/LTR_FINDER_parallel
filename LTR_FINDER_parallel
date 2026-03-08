@@ -10,7 +10,7 @@ use Pod::Usage;
 # updates
 # add the -o parameter. Facilitated by DeepSeek R1. 03/23/2025
 
-my $version = "v1.3";
+my $version = "v1.4";
 # customized parameters
 my $seq_path = ""; #specify the sequence file
 my $finder_para = "-w 2 -C -D 15000 -d 1000 -L 7000 -l 100 -p 20 -M 0.85"; #specify ltr_finder parameters. The "-w 2" parameter is required.
