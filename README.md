@@ -72,7 +72,7 @@ Ou S, Jiang N. LTR_FINDER_parallel: parallelization of LTR_FINDER enabling rapid
 A: You can use the `-harvest_out` parameter to generate `LTRharvest`-format output, then feed to `LTR_retriever` using `-inharvest`. If you have more than one `LTRharvest` output, simply `cat` them together.
 
 2. How to prepare the genome file?  
-A: It's highly recommended to use short and simple sequence names. For example, use letters, numbers, and _ to generate unique names shorter than 15 bits. This will make your downstream analyses much more easier. If you have delicate sequence names and encounter errors, you may want to simplify them and try again.
+A: It's highly recommended to use short and simple sequence names. For example, use letters, numbers, and _ to generate unique names shorter than 15 bits. This will make your downstream analyses much more easier. If you have delicate sequence names and encounter errors, you may want to simplify them and try again. The program will automatically shortern the sequence ID by just keeping the string before the first space.
 
 3. Do I really need to modify the `-size`, `-time`, and `-try1` parameters?  
 A: Not really. Except when you are 100% sure what you are doing, these parameters are optimized for the best performance in general.
